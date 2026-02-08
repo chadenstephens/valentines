@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Will you be my Valentine?</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      font-family: Georgia, "Times New Roman", serif;
+      background: linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 50%, #1a0a2e 100%);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      overflow-x: hidden;
+      position: relative;
+    }
+    .container {
+      text-align: center;
+      max-width: 28rem;
+      position: relative;
+      z-index: 2;
+    }
+    h1 {
+      font-size: clamp(1.4rem, 5vw, 1.9rem);
+      line-height: 1.4;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 20px rgba(255, 182, 193, 0.3);
+    }
+    .sub {
+      font-size: clamp(1.1rem, 4vw, 1.4rem);
+      margin-bottom: 2rem;
+      color: #ffb6c1;
+    }
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+      min-height: 4rem;
+      position: relative;
+    }
+    .btn {
+      padding: 0.9rem 1.8rem;
+      font-size: 1.1rem;
+      font-family: Georgia, serif;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-yes {
+      background: linear-gradient(180deg, #e91e63, #c2185b);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(233, 30, 99, 0.5);
+    }
+    .btn-yes:hover {
+      box-shadow: 0 6px 28px rgba(233, 30, 99, 0.6);
+    }
+    .btn-no {
+      background: linear-gradient(180deg, #555, #333);
+      color: #fff;
+      position: relative;
+      z-index: 10;
+    }
+    .btn-no.runaway {
+      position: fixed;
+    }
+    .success {
+      display: none;
+      margin-top: 1rem;
+    }
+    .success.show { display: block; }
+    .success-msg {
+      font-size: clamp(1rem, 4vw, 1.25rem);
+      margin-bottom: 1rem;
+      color: #ffb6c1;
+    }
+    .btn-try {
+      background: linear-gradient(180deg, #7b1fa2, #4a148c);
+      color: #fff;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+    }
+    #confetti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      overflow: hidden;
+    }
+    .confetti-piece {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      animation: fall linear forwards;
+    }
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Abbie, I love you more than anything.</h1>
+    <p class="sub">Will you be my valentine?</p>
+    <div class="buttons" id="buttons">
+      <button type="button" class="btn btn-yes" id="yesBtn">Yes</button>
+      <button type="button" class="btn btn-no" id="noBtn">No</button>
+    </div>
+    <div class="success" id="success">
+      <p class="success-msg">Thanks! I was starting to sweat you would say no!</p>
+      <button type="button" class="btn btn-try" id="tryBtn">Try Again</button>
+    </div>
+  </div>
+  <div id="confetti"></div>
+
+  <script>
+    (function () {
+      var colors = ['#e91e63', '#ff4081', '#ffb6c1', '#fff', '#ffeb3b', '#c2185b'];
+      var noBtn = document.getElementById('noBtn');
+      var yesBtn = document.getElementById('yesBtn');
+      var success = document.getElementById('success');
+      var tryBtn = document.getElementById('tryBtn');
+      var buttonsWrap = document.getElementById('buttons');
+      var confettiEl = document.getElementById('confetti');
+
+      function randomIn(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      function moveNo() {
+        noBtn.classList.add('runaway');
+        var w = window.innerWidth;
+        var h = window.innerHeight;
+        var bw = noBtn.offsetWidth;
+        var bh = noBtn.offsetHeight;
+        var margin = 12;
+        var maxX = Math.max(0, w - bw - margin * 2);
+        var maxY = Math.max(0, h - bh - margin * 2);
+        noBtn.style.left = randomIn(margin, maxX) + 'px';
+        noBtn.style.top = randomIn(margin, maxY) + 'px';
+      }
+
+      noBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        moveNo();
+      });
+
+      noBtn.addEventListener('touchstart', function (e) {
+        e.preventDefault();
+        moveNo();
+      }, { passive: false });
+
+      function confetti() {
+        var count = 80;
+        for (var i = 0; i < count; i++) {
+          var piece = document.createElement('div');
+          piece.className = 'confetti-piece';
+          piece.style.left = randomIn(0, 100) + 'vw';
+          piece.style.top = '-20px';
+          piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+          piece.style.animationDuration = (randomIn(2, 4)) + 's';
+          piece.style.animationDelay = (randomIn(0, 0.5)) + 's';
+          confettiEl.appendChild(piece);
+          setTimeout(function (p) {
+            return function () { p.remove(); };
+          }(piece), 5000);
+        }
+      }
+
+      yesBtn.addEventListener('click', function () {
+        confetti();
+        document.querySelector('.sub').style.display = 'none';
+        yesBtn.style.display = 'none';
+        noBtn.style.display = 'none';
+        success.classList.add('show');
+      });
+
+      tryBtn.addEventListener('click', function () {
+        success.classList.remove('show');
+        document.querySelector('.sub').style.display = '';
+        yesBtn.style.display = '';
+        noBtn.style.display = '';
+        noBtn.classList.remove('runaway');
+        noBtn.style.left = '';
+        noBtn.style.top = '';
+      });
+    })();
+  </script>
+</body>
+</html>
